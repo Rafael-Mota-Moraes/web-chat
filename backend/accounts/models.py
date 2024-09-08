@@ -16,14 +16,15 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
-    avatar = models.TextField(default='/media/avatars/default-avatar.png')
+    avatar = models.TextField(default="/media/avatars/default-avatar.png")
     name = models.CharField(max_length=80)
     email = models.EmailField(unique=True)
     is_superuser = models.BooleanField(default=False)
     last_access = models.DateTimeField(auto_now_add=True)
 
     objects = UserManager()
-    USERNAME_FIELD = 'email'
+
+    USERNAME_FIELD = "email"
 
     def has_perm(self, perm, obj=None):
         return True
@@ -36,4 +37,4 @@ class User(AbstractBaseUser):
         return self.is_superuser
 
     class Meta:
-        db_table = 'users'
+        db_table = "users"

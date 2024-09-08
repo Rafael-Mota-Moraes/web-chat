@@ -7,7 +7,7 @@ class Authentication:
         user = User.objects.filter(email=email).first()
 
         if user and check_password(password, user.password):
-            return User
+            return user
 
         return False
 
@@ -20,3 +20,5 @@ class Authentication:
             email=email,
             password=make_password(password)
         )
+
+        return user

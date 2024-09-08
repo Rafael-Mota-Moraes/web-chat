@@ -15,7 +15,6 @@ from accounts.models import User
 
 from core.utils.exceptions import ValidationError
 
-
 import uuid
 
 
@@ -73,7 +72,7 @@ class UserView(APIView):
         user = UserSerializer(request.user).data
 
         return Response({
-            "user": user,
+            "user": user
         })
 
     def put(self, request):
@@ -84,8 +83,8 @@ class UserView(APIView):
 
         # Initialize storage
         storage = FileSystemStorage(
-            settings.MEDIA_ROOT / 'avatars',
-            settings.MEDIA_URL + 'avatars'
+            settings.MEDIA_ROOT / "avatars",
+            settings.MEDIA_URL + "avatars"
         )
 
         if avatar:
@@ -93,36 +92,34 @@ class UserView(APIView):
             extension = avatar.name.split('.')[-1]
 
             # Validate avatar
-
-            if not content_type == 'image/png' and not content_type == 'image/jpeg':
+            if not content_type == "image/png" and not content_type == "image/jpeg":
                 raise ValidationError(
-                    'Somente arquivos PNG ou JPG são aceitos')
+                    "Somente arquivos do tipo PNG ou JPEG são suportados")
 
             # Save new avatar
-            file = storage.save(f'{uuid.uuid4()}.{extension}', avatar)
+            file = storage.save(f"{uuid.uuid4()}.{extension}", avatar)
             avatar = storage.url(file)
 
         serializer = UserSerializer(request.user, data={
-            "name": name, "email": email, "avatar": avatar or request.user.avatar
+            "name": name,
+            "email": email,
+            "avatar": avatar or request.user.avatar
         })
 
         if not serializer.is_valid():
             # Delete uploaded file
-
             if avatar:
-                storage.delete(avatar.split('/')[-1])
+                storage.delete(avatar.split("/")[-1])
 
             first_error = list(serializer.errors.values())[0][0]
 
             raise ValidationError(first_error)
 
         # Delete old avatar
-
-        if avatar and request.user.avatar != '/media/avatars/default-avatar.png':
-            storage.delete(request.user.avatar.split('/')[-1])
+        if avatar and request.user.avatar != "/media/avatars/default-avatar.png":
+            storage.delete(request.user.avatar.split("/")[-1])
 
         # Update password
-
         if password:
             request.user.set_password(password)
 
