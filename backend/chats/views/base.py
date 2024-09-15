@@ -10,7 +10,7 @@ from chats.serializers import ChatSerializer
 class BaseView(APIView):
     # Get User by any fields
     def get_user(self, raise_exception=True, **kwargs) -> User | None:
-        user = User.objects.filter(**kwargs)
+        user = User.objects.filter(**kwargs).first()
 
         if not user and raise_exception:
             raise UserNotFound
@@ -36,12 +36,12 @@ class BaseView(APIView):
             deleted_at__isnull=True
         ).first()
 
-        if not Chat:
+        if not chat:
             raise ChatNotFound
 
         return chat
-
     # Mark messages that have been received as seen
+
     def mark_messages_as_seen(self, chat_id, user_id) -> None:
         ChatMessage.objects.filter(
             chat_id=chat_id,
